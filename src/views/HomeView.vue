@@ -3,10 +3,9 @@
 		<div class="row mx-0">
 			<div class="col-lg-6">
 				<div class="img-cont">
-					<img alt="Vue logo" src="../assets/img/wordmark.svg" />
-					<h2 class="text-center text-lg-start">
-						Conéctate con amigos y el resto del mundo usando Mazebook
-					</h2>
+					<h1 id="TituloAbsoluto" class="text-center text-lg-start">SCAMCSCARE</h1>
+					<h1 class="text-center text-lg-start">Conéctate con amigos y el resto del mundo usando ScamScare
+					</h1>
 				</div>
 			</div>
 			<div class="col-lg-6">
@@ -90,6 +89,14 @@ export default {
 </script>
 
 <style scoped>
+
+#TituloAbsoluto {
+	margin-top: 3rem;
+	color: rgb(62, 62, 210);
+	font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+	font-size: 50px;
+}
+
 h2 {
 	max-width: 470px;
 	margin: auto;
