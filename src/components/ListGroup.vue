@@ -1,170 +1,141 @@
 <template>
 	<ul class="list-group">
-	  <!-- Contador de likes -->
 	  <li v-if="likesCount > 0" class="list-group-item text-muted">
 		A {{ likesCount }} personas les gusta esto
 	  </li>
-  
-	  <!-- Botones Like y Comentar -->
 	  <li class="list-group-item">
 		<div class="row">
-		  <!-- Botón Like -->
 		  <div class="col d-grid">
 			<button 
 			  @click="toggleLike"
 			  class="btn d-flex justify-content-center align-items-center gap-2 px-0"
-			  :class="{ 'text-primary': isLiked }">
+			  :class="{ 'text-primary': isLiked }"
+			  :disabled="loading"
+			>
 			  <span class="material-icons-round">thumb_up</span>
 			  {{ isLiked ? 'Te gusta' : 'Me gusta' }}
+			  <span v-if="loading" class="spinner-border spinner-border-sm"></span>
 			</button>
 		  </div>
-  
-		  <!-- Botón Comentar -->
 		  <div class="col d-grid">
 			<button 
 			  @click="showComments = !showComments"
-			  class="btn d-flex justify-content-center align-items-center gap-2 px-0">
+			  class="btn d-flex justify-content-center align-items-center gap-2 px-0"
+			>
 			  <span class="material-icons-round">chat_bubble_outline</span>
 			  Comentar
 			</button>
 		  </div>
 		</div>
 	  </li>
-  
-	  <!-- Sección de Comentarios (aparece al hacer clic) -->
 	  <li v-if="showComments" class="list-group-item">
-		<!-- Campo para nuevo comentario -->
 		<div class="mb-3">
 		  <textarea 
 			v-model="newComment"
 			class="form-control" 
-			placeholder="Escribe algo...">
-		  </textarea>
+			placeholder="Escribe algo..."
+			:disabled="commentLoading"
+		  ></textarea>
 		</div>
 		<button 
 		  @click="addComment"
-		  class="btn btn-primary btn-sm">
+		  class="btn btn-primary btn-sm"
+		  :disabled="!newComment.trim() || commentLoading"
+		>
+		  <span v-if="commentLoading" class="spinner-border spinner-border-sm"></span>
 		  Publicar
 		</button>
-  
-		<!-- Lista de comentarios -->
 		<div 
 		  v-for="(comment, index) in comments" 
 		  :key="index" 
-		  class="mt-2 p-2 border-top">
+		  class="mt-2 p-2 border-top"
+		>
 		  <strong>{{ comment.userName }}</strong>: {{ comment.text }}
 		</div>
 	  </li>
 	</ul>
   </template>
   
-  <script>
+  <script setup>
   import { ref, onMounted } from 'vue';
   import { 
-	doc, 
-	updateDoc, 
-	arrayUnion, 
-	arrayRemove,
-	increment,
-	getDoc 
+	doc, updateDoc, arrayUnion, arrayRemove,
+	increment, getDoc 
   } from 'firebase/firestore';
   import { db } from '@/main';
   import { getAuth } from 'firebase/auth';
   
-  export default {
-	props: {
-	  postId: {  // Recibe el ID de la publicación como prop
-		type: String,
-		required: true
-	  }
-	},
-	setup(props) {
-	  // Datos reactivos
-	  const likesCount = ref(0);
-	  const isLiked = ref(false);
-	  const showComments = ref(false);
-	  const newComment = ref('');
-	  const comments = ref([]);
-	  const auth = getAuth();
+  const props = defineProps({
+	postId: { type: String, required: true }
+  });
   
-	  // Cargar datos iniciales
-	  const loadData = async () => {
-		const postRef = doc(db, 'posts', props.postId);
-		const postSnap = await getDoc(postRef);
-		
-		if (postSnap.exists()) {
-		  const data = postSnap.data();
-		  likesCount.value = data.likes || 0;
-		  comments.value = data.comments || [];
-		  
-		  // Verificar si el usuario actual ya dio like
-		  if (auth.currentUser && data.likedBy?.includes(auth.currentUser.uid)) {
-			isLiked.value = true;
-		  }
-		}
-	  };
+  const auth = getAuth();
+  const likesCount = ref(0);
+  const isLiked = ref(false);
+  const showComments = ref(false);
+  const newComment = ref('');
+  const comments = ref([]);
+  const loading = ref(false);
+  const commentLoading = ref(false);
   
-	  // Dar o quitar like
-	  const toggleLike = async () => {
-		const user = auth.currentUser;
-		if (!user) return alert('Inicia sesión para dar like');
-		
-		const postRef = doc(db, 'posts', props.postId);
-		
-		if (isLiked.value) {
-		  // Quitar like
-		  await updateDoc(postRef, {
-			likes: increment(-1),
-			likedBy: arrayRemove(user.uid)
-		  });
-		  likesCount.value--;
-		} else {
-		  // Dar like
-		  await updateDoc(postRef, {
-			likes: increment(1),
-			likedBy: arrayUnion(user.uid)
-		  });
-		  likesCount.value++;
-		}
-		isLiked.value = !isLiked.value;
-	  };
-  
-	  // Añadir comentario
-	  const addComment = async () => {
-		const user = auth.currentUser;
-		if (!user) return alert('Inicia sesión para comentar');
-		if (!newComment.value.trim()) return alert('Escribe un comentario');
-		
-		const comment = {
-		  userName: user.displayName || 'Anónimo',
-		  userId: user.uid,
-		  text: newComment.value,
-		  date: new Date().toISOString()
-		};
-  
-		const postRef = doc(db, 'posts', props.postId);
-		await updateDoc(postRef, {
-		  comments: arrayUnion(comment)
-		});
-		
-		comments.value.push(comment);
-		newComment.value = ''; // Limpiar el campo
-	  };
-  
-	  // Cargar datos al iniciar
-	  onMounted(loadData);
-  
-	  return {
-		likesCount,
-		isLiked,
-		showComments,
-		newComment,
-		comments,
-		toggleLike,
-		addComment
-	  };
+  const loadData = async () => {
+	const postRef = doc(db, 'posts', props.postId);
+	const postSnap = await getDoc(postRef);
+	
+	if (postSnap.exists()) {
+	  const data = postSnap.data();
+	  likesCount.value = data.likes || 0;
+	  comments.value = data.comments || [];
+	  isLiked.value = auth.currentUser?.uid && data.likedBy?.includes(auth.currentUser.uid);
 	}
   };
+  
+  const toggleLike = async () => {
+	if (!auth.currentUser) return alert('Inicia sesión para dar like');
+	loading.value = true;
+	
+	const postRef = doc(db, 'posts', props.postId);
+	try {
+	  await updateDoc(postRef, {
+		likes: increment(isLiked.value ? -1 : 1),
+		likedBy: isLiked.value 
+		  ? arrayRemove(auth.currentUser.uid) 
+		  : arrayUnion(auth.currentUser.uid)
+	  });
+	  isLiked.value = !isLiked.value;
+	  likesCount.value += isLiked.value ? 1 : -1;
+	} catch (error) {
+	  console.error("Error al dar like:", error);
+	} finally {
+	  loading.value = false;
+	}
+  };
+  
+  const addComment = async () => {
+	if (!auth.currentUser) return alert('Inicia sesión para comentar');
+	commentLoading.value = true;
+	
+	try {
+	  const comment = {
+		userName: auth.currentUser.displayName || 'Anónimo',
+		userId: auth.currentUser.uid,
+		text: newComment.value.trim(),
+		date: new Date().toISOString()
+	  };
+	  
+	  await updateDoc(doc(db, 'posts', props.postId), {
+		comments: arrayUnion(comment)
+	  });
+	  comments.value.push(comment);
+	  newComment.value = '';
+	} catch (error) {
+	  console.error("Error al comentar:", error);
+	} finally {
+	  commentLoading.value = false;
+	}
+  };
+  
+  onMounted(loadData);
   </script>
   
   <style scoped>

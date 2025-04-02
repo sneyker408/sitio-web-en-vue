@@ -1,27 +1,28 @@
 <template>
   <div class="profile-container">
     <!-- Portada -->
-    <div class="cover-photo" :style="{ backgroundImage: 'url(https://images.pexels.com/photos/325185/pexels-photo-325185.jpeg)' }">
-      <div class="profile-picture">
-        <img :src="user.photoURL || 'https://randomuser.me/api/portraits/men/81.jpg'" alt="Foto de perfil">
+    <div class="cover-photo" :style="{ backgroundImage: 'url(' + coverPhoto + ')' }">
+      <div class="profile-picture" @click="changeCoverPhoto">
+        <img :src="user.photoURL" alt="Foto de perfil">
+        <span class="edit-icon">✏️</span>
       </div>
     </div>
 
     <!-- Información del usuario -->
     <div class="profile-info">
-      <h1>{{ user.displayName || 'Usuario Mazebook' }}</h1>
-      <p class="bio">{{ bio || 'Biografía no especificada' }}</p>
+      <h1>{{ user.displayName }}</h1>
+      <p class="bio">{{ bio }}</p>
       <div class="stats">
         <div class="stat">
-          <strong>125</strong>
+          <strong>{{ userPosts.length }}</strong>
           <span>Publicaciones</span>
         </div>
-        <div class="stat">
-          <strong>1.2K</strong>
+        <div class="stat" @click="showFollowers">
+          <strong>{{ followersCount }}</strong>
           <span>Seguidores</span>
         </div>
-        <div class="stat">
-          <strong>350</strong>
+        <div class="stat" @click="showFollowing">
+          <strong>{{ followingCount }}</strong>
           <span>Seguidos</span>
         </div>
       </div>
@@ -29,22 +30,34 @@
 
     <!-- Botones de acción -->
     <div class="actions">
-      <button class="btn-edit">Editar perfil</button>
-      <button class="btn-settings">
-        <span class="material-icons-round">settings</span>
+      <button @click="editProfile" class="btn-edit">
+        ✏️ Editar perfil
       </button>
     </div>
 
     <!-- Publicaciones del usuario -->
     <div class="user-posts">
-      <h3>Publicaciones</h3>
-      <div class="posts-grid">
-        <div 
-          v-for="post in posts" 
-          :key="post.id" 
-          class="post-thumbnail"
-          :style="{ backgroundImage: 'url(' + post.image + ')' }"
-        ></div>
+      <h3>Mis Publicaciones</h3>
+      <div v-if="userPosts.length > 0" class="posts-grid">
+        <CardComp 
+          v-for="post in userPosts" 
+          :key="post.id"
+          :title="user.displayName"
+          :parrafo="post.content"
+          :picture="post.imageUrl"
+          :header="{
+            name: user.displayName,
+            picture: user.photoURL
+          }"
+          :likes="true"
+          :postId="post.id"
+        />
+      </div>
+      <div v-else class="no-posts">
+        <p>Aún no tienes publicaciones</p>
+        <button @click="$router.push('/create-post')" class="btn-primary">
+          Crear primera publicación
+        </button>
       </div>
     </div>
   </div>
@@ -52,36 +65,65 @@
 
 <script>
 import { getAuth } from 'firebase/auth'
-import { collection, query, where, getDocs } from 'firebase/firestore'
+import { doc, getDoc, collection, query, where, onSnapshot } from 'firebase/firestore'
 import { db } from '@/main'
+import CardComp from '@/components/CardComp.vue'
 
 export default {
-  name: 'ProfileView',
+  components: { CardComp },
   data() {
     return {
-      user: {},
-      bio: 'Amante de los perros y la tecnología 🐕💻',
-      posts: [
-        { id: 1, image: 'https://images.pexels.com/photos/169647/pexels-photo-169647.jpeg' },
-        { id: 2, image: 'https://images.pexels.com/photos/4067904/pexels-photo-4067904.jpeg' },
-        { id: 3, image: 'https://images.pexels.com/photos/142497/pexels-photo-142497.jpeg' }
-      ]
+      user: null,
+      bio: 'Biografía no especificada',
+      coverPhoto: 'https://images.pexels.com/photos/325185/pexels-photo-325185.jpeg',
+      followersCount: 0,
+      followingCount: 0,
+      userPosts: []
     }
   },
   async created() {
     const auth = getAuth()
     this.user = auth.currentUser
-    
-    // Obtener posts del usuario desde Firestore
-    try {
-      const q = query(collection(db, "posts"), where("authorId", "==", this.user.uid))
-      const querySnapshot = await getDocs(q)
-      this.posts = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-    } catch (error) {
-      console.error("Error cargando posts:", error)
+    await this.loadUserData()
+    this.loadUserPosts()
+  },
+  methods: {
+    async loadUserData() {
+      const userDoc = await getDoc(doc(db, 'users', this.user.uid))
+      if (userDoc.exists()) {
+        const data = userDoc.data()
+        this.bio = data.bio || this.bio
+        this.coverPhoto = data.coverPhoto || this.coverPhoto
+        this.followersCount = data.followersCount || 0
+        this.followingCount = data.followingCount || 0
+      }
+    },
+    async loadUserPosts() {
+      const q = query(
+        collection(db, 'posts'),
+        where('authorId', '==', this.user.uid),
+        orderBy('createdAt', 'desc')
+      )
+      
+      onSnapshot(q, (snapshot) => {
+        this.userPosts = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+      })
+    },
+    editProfile() {
+      this.$router.push('/edit-profile')
+    },
+    changeCoverPhoto() {
+      // Implementar lógica para cambiar foto de portada
+      alert('Funcionalidad para cambiar foto de portada en desarrollo')
+    },
+    showFollowers() {
+      this.$router.push('/followers')
+    },
+    showFollowing() {
+      this.$router.push('/following')
     }
   }
 }
@@ -98,8 +140,8 @@ export default {
   height: 300px;
   background-size: cover;
   background-position: center;
-  position: relative;
   border-radius: 8px;
+  position: relative;
 }
 
 .profile-picture {
@@ -111,13 +153,27 @@ export default {
   border-radius: 50%;
   border: 4px solid white;
   overflow: hidden;
-  background: #f0f2f5;
+  cursor: pointer;
 }
 
 .profile-picture img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.edit-icon {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.5);
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .profile-info {
@@ -132,63 +188,74 @@ export default {
 
 .bio {
   color: #65676b;
-  margin: 10px 0;
+  margin: 10px 0 20px;
 }
 
 .stats {
   display: flex;
   gap: 20px;
-  margin: 15px 0;
+  margin: 20px 0;
 }
 
 .stat {
   text-align: center;
+  cursor: pointer;
+}
+
+.stat strong {
+  font-size: 18px;
+  display: block;
+}
+
+.stat span {
+  font-size: 14px;
+  color: #65676b;
 }
 
 .actions {
-  display: flex;
-  gap: 10px;
   margin: 20px 0;
-  padding: 0 20px;
 }
 
 .btn-edit {
-  flex: 1;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  background: white;
-  font-weight: bold;
-}
-
-.btn-settings {
-  width: 40px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  background: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: #e4e6eb;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .user-posts {
-  margin-top: 30px;
+  margin-top: 40px;
   border-top: 1px solid #ddd;
   padding-top: 20px;
 }
 
 .posts-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 5px;
-  margin-top: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
 }
 
-.post-thumbnail {
-  aspect-ratio: 1;
-  background-size: cover;
-  background-position: center;
-  border-radius: 5px;
+.no-posts {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.no-posts p {
+  color: #65676b;
+  margin-bottom: 20px;
+}
+
+.btn-primary {
+  background: #1877f2;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 @media (max-width: 768px) {
