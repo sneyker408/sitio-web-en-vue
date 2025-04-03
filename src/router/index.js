@@ -22,6 +22,12 @@ const routes = [
 		name: 'profile',
 		component: () => import('../views/ProfileView.vue'),
 	},
+	{
+		path: '/create-post',
+		name: 'create-post',
+		component: () => import('../views/CreatePost.vue'),
+		meta: { requiresAuth: true } // Opcional: para proteger la ruta
+	},
 ]
 
 const router = createRouter({

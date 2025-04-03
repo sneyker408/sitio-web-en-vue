@@ -9,6 +9,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics"
 import 'material-icons/iconfont/material-icons.css'
 import { getFirestore } from 'firebase/firestore'
+import { getStorage } from 'firebase/storage';
 
 // 👇 Reemplaza con tu configuración de Firebase
 const firebaseConfig = {
@@ -23,8 +24,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
-
-export { db }
+const storage = getStorage(app);
+export { db, storage };
 
 
 

@@ -1,6 +1,10 @@
 <template>
 	<div class="posts container">
 	  <h1 class="TituloAbsoluto">ScamScare</h1>
+	  <button @click="$router.push('/create-post')" class="btn btn-primary mb-3"
+			style="max-width: 550px; margin: 0 auto; display: block;">
+			Crear nueva publicación
+		</button>
 	  <CardComp
 		v-for="post in posts"
 		:key="post.id"

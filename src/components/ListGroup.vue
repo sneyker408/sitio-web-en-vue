@@ -13,7 +13,7 @@
 			  :disabled="loading"
 			>
 			  <span class="material-icons-round">thumb_up</span>
-			  {{ isLiked ? 'Te gusta' : 'Me gusta' }}
+			  {{ isLiked ? 'Me gusta' : '¿Te gusta?' }}
 			  <span v-if="loading" class="spinner-border spinner-border-sm"></span>
 			</button>
 		  </div>

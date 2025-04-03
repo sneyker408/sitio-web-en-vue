@@ -12,15 +12,17 @@
 			<div class="col-lg-6">
 				<card-comp :btns="btnArray" class="mx-auto card-comp">
 					<template #default>
-						<form>
+						<form @submit.prevent="handleSubmit">
 							<div class="mb-3 mt-2">
 								<input
+									v-model="email"
 									type="email"
 									class="form-control"
 									placeholder="Ingresa tu email" />
 							</div>
 							<div class="mb-3 mt-2">
 								<input
+									v-model="password"
 									type="password"
 									class="form-control"
 									placeholder="Contraseña" />
@@ -55,7 +57,11 @@ export default {
 		const btnArray = ref([
 			{
 				txt: 'Iniciar sesión',
-				class: 'btn-primary',
+				class: 'btn-danger',
+				// class: 'btn-primary',
+				// class: 'btn-dark',
+				// class: 'btn-success',
+				// class: 'btn-warning',
 			},
 			{
 				txt: '¿Has olvidado tu contraseña?',
