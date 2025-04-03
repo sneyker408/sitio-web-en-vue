@@ -43,11 +43,57 @@
   </script>
   
   <style scoped>
+	.post-img {
+	max-width: 100%;
+	}
+
+	/* === Caja === */
   .card {
+	position: relative;/* */
 	border: none;
 	box-shadow: 0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%);
+	overflow: hidden; /* */
   }
-  .post-img {
-	max-width: 100%;
+
+
+  /* .card::before {
+	content: "";
+	position: absolute;
+	top: -50%;
+	left: -50%;
+	width: 380px;
+	height: 105%;
+	background: linear-gradient(0deg, transparent, rgb(0, 255, 255), rgb(0, 255, 255));
+	transform-origin: bottom right;
+	animation: animate 6s linear infinite;
+	animation-delay: -3s;
   }
+
+  .card::after {
+	content: "";
+	position: absolute;
+	top: -50%;
+	left: -50%;
+	width: 380px;
+	height: 105%;
+	background: linear-gradient(0deg, transparent, rgb(0, 255, 255), rgb(0, 255, 255));
+	transform-origin: bottom right;
+	animation: animate 6s linear infinite;
+  }
+
+  @keyframes animate {
+	0%
+	{
+		transform: rotate(0deg);
+	}
+	100%
+	{
+		transform: rotate(360deg);
+	}
+  } */
+
+  
+
+
+  
   </style>

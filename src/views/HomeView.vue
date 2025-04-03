@@ -29,14 +29,15 @@
 							</div>
 						</form>
 					</template>
-					<template v-slot:footer>
+					<!-- <template v-slot:footer>
 						<hr />
 						<button @click="loginGoogle" class="btn-google">
 							
 							<span >Continuar con Google</span>
 							<img src="" alt="">
 						</button>
-					</template>
+					</template> -->
+				
 				</card-comp>
 			</div>
 		</div>
@@ -59,6 +60,7 @@ export default {
 				txt: 'Iniciar sesión',
 				class: 'btn-danger',
 				// class: 'btn-primary',
+				// class: 'btn-danger',
 				// class: 'btn-dark',
 				// class: 'btn-success',
 				// class: 'btn-warning',
@@ -66,6 +68,10 @@ export default {
 			{
 				txt: '¿Has olvidado tu contraseña?',
 				class: '',
+			},
+			{
+				txt: 'Registrarse',
+				class: 'btn-dark',
 			},
 		])
 
@@ -99,10 +105,24 @@ export default {
 
 /* ========== Subtitulos ============= */
 .logo {
+	margin-top: 1rem;
 	width: 8rem;
 	height: auto;
 	margin: 0;
+	animation: levitar 3s ease-in-out infinite;
 }
+
+	@keyframes levitar {
+		0% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(-10px);
+		}
+		100% {
+			transform: translateY(0);
+		}
+	}
 
 .Introduccion {
 	display: flex;
@@ -114,7 +134,6 @@ export default {
 }
 
 #TituloAbsoluto {
-	margin-top: 0.5rem;
 	color: red;
 	font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 	font-size: 50px;
