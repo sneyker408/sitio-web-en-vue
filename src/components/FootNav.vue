@@ -12,8 +12,8 @@
 				<router-link class="router-link" to="/posts">Posts</router-link>
 			</li>
 		</ul>
-		<img src="../assets/img/logo.png" alt="mazebook logo" />
-		<div class="text-black-50 text-center">mazebook &#169; 2022</div>
+		<img src="../assets/img/LogoVue.png" alt="ScamStore logo" />
+		<div class="text-black-50 text-center">ScamStore &#169; 2025</div>
 	</footer>
 </template>
 

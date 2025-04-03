@@ -1,6 +1,6 @@
 <template>
 	<div class="posts container">
-	  <img alt="mazebook" src="../assets/img/wordmark.svg" class="logo" />
+	  <h1 class="TituloAbsoluto">ScamScare</h1>
 	  <CardComp
 		v-for="post in posts"
 		:key="post.id"
@@ -47,4 +47,13 @@
 	max-width: 115px;
 	padding: 0.2rem;
   }
+
+  .TituloAbsoluto {
+	margin-top: 1rem;
+	margin-bottom: 2rem;
+	color: red;
+	font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+	font-size: 50px;
+	text-align: center;
+}
   </style>

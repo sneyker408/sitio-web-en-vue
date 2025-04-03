@@ -169,5 +169,5 @@
     display: block;
     margin-top: 5px;
   }
-  /* (Mantén los estilos anteriores) */
+ 
   </style>

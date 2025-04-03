@@ -2,9 +2,10 @@
 	<div class="home">
 		<div class="row mx-0">
 			<div class="col-lg-6">
-				<div class="img-cont">
-					<h1 id="TituloAbsoluto" class="text-center text-lg-start">SCAMCSCARE</h1>
-					<h1 class="text-center text-lg-start">Conéctate con amigos y el resto del mundo usando ScamScare
+				<div class="Introduccion">
+					<img class="logo" src="../assets/img/LogoVue.png" alt="Logo">
+					<h1 id="TituloAbsoluto" class="text-center text-lg-start">SCAMSTORE</h1>
+					<h1 id="Subtitulo" class="text-center text-lg-start " style="text-align: justify; max-width: 100%;">Conéctate con tus amigos y el resto del mundo usando ScamStore
 					</h1>
 				</div>
 			</div>
@@ -43,7 +44,7 @@
 <script>
 import { ref } from 'vue'
 import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth'
-import { useRouter } from 'vue-router' // ✅ Importamos useRouter
+import { useRouter } from 'vue-router' // Importamos useRouter
 import CardComp from '../components/CardComp.vue'
 
 export default {
@@ -64,7 +65,7 @@ export default {
 
 		const googleProvider = new GoogleAuthProvider()
 		const auth = getAuth()
-		const router = useRouter() // ✅ Inicializamos router
+		const router = useRouter() // Inicializamos router
 		
 
 		const loginGoogle = async () => {
@@ -72,7 +73,7 @@ export default {
 				await signInWithPopup(auth, googleProvider)
 				alert('¡Inicio de sesión exitoso!')
 
-				// ✅ Redirigir automáticamente a /posts después del login
+				// Redirigir automáticamente a /posts después del login
 				router.push('/posts')
 			} catch (error) {
 				console.error('Error al iniciar sesión:', error)
@@ -90,11 +91,32 @@ export default {
 
 <style scoped>
 
+/* ========== Subtitulos ============= */
+.logo {
+	width: 8rem;
+	height: auto;
+	margin: 0;
+}
+
+.Introduccion {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	margin: 0;
+}
+
 #TituloAbsoluto {
-	margin-top: 3rem;
-	color: rgb(62, 62, 210);
+	margin-top: 0.5rem;
+	color: red;
 	font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 	font-size: 50px;
+}
+
+#Subtitulo {
+	text-align: justify !important;
+    max-width: 80% !important;
 }
 
 h2 {
@@ -108,10 +130,6 @@ h2 {
 	margin: auto;
 }
 
-.img-cont {
-	display: flex;
-	flex-direction: column;
-}
 
 img {
 	max-width: 315px;
@@ -122,7 +140,7 @@ img {
 	max-width: 398px;
 }
 
-/* ✅ Estilo del botón de Google */
+/* Estilo del botón de Google */
 
 
 .btn-google img {

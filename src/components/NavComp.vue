@@ -1,5 +1,5 @@
 <template>
-	<nav class="navbar navbar-expand-lg bg-primary">
+	<nav class="navbar navbar-expand-lg bg-danger">
 		<div class="container justify-content-evenly">
 			<router-link
 				to="/"
