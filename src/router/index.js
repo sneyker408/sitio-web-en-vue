@@ -76,7 +76,7 @@ router.beforeEach(async (to, from, next) => {
 	  if (requiresAuth && !isAuthenticated) {
 		next('/')  // Redirige al login (HomeView)
 	  } else if (requiresGuest && isAuthenticated) {
-		next('/posts')  // Redirige a una ruta autenticada
+		next()  // Redirige a una ruta autenticada
 	  } else {
 		next()
 	  }

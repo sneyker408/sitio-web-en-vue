@@ -11,6 +11,7 @@ import 'material-icons/iconfont/material-icons.css'
 import { getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage';
 import { getAuth, GoogleAuthProvider, FacebookAuthProvider } from 'firebase/auth'
+import '@fortawesome/fontawesome-free/css/all.css'
 
 // 👇 Reemplaza con tu configuración de Firebase
 const firebaseConfig = {
