@@ -137,14 +137,14 @@
       if (coverPhoto.value) {
         updates.coverPhoto = await uploadImage(
           coverPhoto.value, 
-          `covers/${user.uid}`
+          covers/${user.uid}
         );
       }
       
       if (profilePhoto.value) {
         updates.photoURL = await uploadImage(
           profilePhoto.value, 
-          `profiles/${user.uid}`
+          profiles/${user.uid}
         );
       }
       
